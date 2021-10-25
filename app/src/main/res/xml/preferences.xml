@@ -3,12 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!--TODO export to strings xml-->
-    <PreferenceCategory app:title="Info"
-        app:summary="Select which site to get JSON data from">
+    <PreferenceCategory app:title="@string/pref_title"
+        app:summary="@string/listpref_summary">
 
         <ListPreference
-            android:key="url_preference"
-            android:title="Info"
+            android:key="@string/url_pref"
+            android:title="@string/pref_title"
+            android:summary="@string/listpref_summary"
             android:entries="@array/JSON_URL_NAME"
             android:entryValues="@array/JSON_URL">
         </ListPreference>

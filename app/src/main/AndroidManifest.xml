@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Proj3_Max_Wayne">
+        <activity android:name=".SettingsActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

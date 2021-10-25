@@ -1,6 +1,7 @@
 package com.example.proj3_max_wayne;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,12 +29,18 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.PreferenceManager;
 
 public class MainActivity extends AppCompatActivity {
-
+    // TODO make all of these private
     // Persists across config changes
     DataVM myVM;
     ImageView iv;
+
+    // Preference, default to cnu site
+    String jsonLink;
+    SharedPreferences myPreference;
+    SharedPreferences.OnSharedPreferenceChangeListener listener = null;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -46,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        // Don't display title
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Create ViewModel
         myVM = new ViewModelProvider(this).get(DataVM.class);
@@ -80,6 +89,20 @@ public class MainActivity extends AppCompatActivity {
                 myVM.getImage(url);
             }
         });
+
+        // Set up preferences
+        if (myPreference == null){
+            myPreference = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        }
+        if (listener == null){
+            listener = new SharedPreferences.OnSharedPreferenceChangeListener(){
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                    getPrefValues(myPreference);
+                }
+            };
+        }
+        myPreference.registerOnSharedPreferenceChangeListener(listener);
     }
 
     @Override
@@ -103,6 +126,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // TODO maybe this should call the vm
+    private void getPrefValues(SharedPreferences settings){
+        jsonLink = settings.getString(getString(R.string.url_pref),getString(R.string.default_url));
+        Toast.makeText(MainActivity.this,jsonLink,Toast.LENGTH_LONG).show();
     }
 
 }
