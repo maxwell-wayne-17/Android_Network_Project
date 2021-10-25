@@ -1,5 +1,6 @@
 package com.example.proj3_max_wayne;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -97,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent myIntent = new Intent(this, SettingsActivity.class);
+            startActivity(myIntent);
         }
 
         return super.onOptionsItemSelected(item);

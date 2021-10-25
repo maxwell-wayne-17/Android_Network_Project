@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--TODO export to strings xml-->
+    <PreferenceCategory app:title="Info"
+        app:summary="Select which site to get JSON data from">
+
+        <ListPreference
+            android:key="url_preference"
+            android:title="Info"
+            android:entries="@array/JSON_URL_NAME"
+            android:entryValues="@array/JSON_URL">
+        </ListPreference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
