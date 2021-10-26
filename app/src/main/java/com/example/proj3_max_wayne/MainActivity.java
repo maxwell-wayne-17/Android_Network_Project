@@ -3,6 +3,7 @@ package com.example.proj3_max_wayne;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -26,7 +27,11 @@ import com.example.proj3_max_wayne.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -38,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
     // Persists across config changes
     DataVM myVM;
     ImageView iv;
+    private Spinner spinner;
+    // Used to determine if spinner should be set up
+    private boolean validPets = false;
 
     // Preference, default to cnu site
     String jsonLink;
@@ -71,12 +79,14 @@ public class MainActivity extends AppCompatActivity {
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                     Log.d(TAG, "on create preference");
                     myVM.getPrefValues(myPreference);
+                    myVM.getJSON();
                 }
             };
         }
         myPreference.registerOnSharedPreferenceChangeListener(listener);
         // Always set preference on create
         myVM.getPrefValues(myPreference);
+        setupSpinner();
 
         // Create observer to update UI image
         final Observer<Bitmap> bmpObserver = new Observer<Bitmap>() {
@@ -96,7 +106,8 @@ public class MainActivity extends AppCompatActivity {
                 // Update the UI, in this case, a TextView.
                 Toast.makeText(MainActivity.this,result,Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onChanged listener = " + result);
-                myVM.setImgLinks(result);
+                validPets = myVM.setImgLinks(result);
+                setupSpinner();
             }
         };
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
@@ -107,12 +118,46 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String url=myVM.links[myVM.currentLink++%myVM.links.length];
-                myVM.getJSON();
+                //myVM.getJSON();
                 myVM.getImage(url);
             }
         });
+    }
 
+    // Set up spinner
+    // TODO currently getting called multiple times.  Needs to be set up first in oncreate.  Should track preference changes
+    private void setupSpinner(){
+        // Check if valid pets array, if not, leave spinner empty
+        Log.d(TAG, "Spinner set up " + validPets);
+        if (!validPets){
+            return;
+        }
+        Log.d(TAG, "Spinner set up " + myVM.getPetsArray().toString());
+        // Create adapter
+        ArrayAdapter<String> adapter = new ArrayAdapter(this, R.layout.spinner_item, myVM.getPetsArray());
+        // Get reference to the spinner
+        spinner = (Spinner) findViewById(R.id.spinner);
+        // Bind adapter
+        spinner.setAdapter(adapter);
+        // On click listener
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public static final int SELECTED_ITEM = 0;
 
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String name = (String) parent.getItemAtPosition(position);
+                String file = myVM.getPetImg(name);
+                Log.d(TAG, "Spinner clicked " + name + " " + file);
+                myVM.getImage(file);
+                if (parent.getChildAt(SELECTED_ITEM) != null){
+                    ( (TextView) parent.getChildAt(SELECTED_ITEM) ).setTextColor(Color.WHITE);
+                    Toast.makeText(MainActivity.this,(String) parent.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
     @Override

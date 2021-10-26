@@ -32,15 +32,22 @@ public class DataVM extends ViewModel {
     // TODO - make variables private and use getters
 
     // Hardcoded for now, must be dynamically pulled
-    String links[] = {  "https://www.pcs.cnu.edu/~kperkins/pets/p33.png",
-            "https://www.pcs.cnu.edu/~kperkins/pets/p44.png",
-            "https://www.pcs.cnu.edu/~kperkins/pets/p55.png",
-            "https://www.pcs.cnu.edu/~kperkins/pets/p22.png"};
+    String links[] = {  "p33.png",
+            "p44.png",
+            "p55.png",
+            "p22.png"};
 
-    private JSONArray jsonArray;
+    // Consts for accessing json object
+    private final String NAME = "name";
+    private final String FILE = "file";
+    // Will hold pet names for spinner
+    private List<String> petNames = new ArrayList<>();
+    // Will hold pet names as keys and their image file name as values
+    // This will be utilized in the getImg call
+    private HashMap<String,String> petsAndImgs = new HashMap<>();
 
     // Must get from settings
-    String jsonLink; //"https://www.pcs.cnu.edu/~kperkins/pets/pets.json";
+    String link;
     private final String URL_PREF_KEY = "url_preference";
     private final String DEFAULT_URL = "https://www.pcs.cnu.edu/~kperkins/pets/";
     private final String TAG = "DataVM Debug";
@@ -70,15 +77,16 @@ public class DataVM extends ViewModel {
     }
 
     public void getPrefValues(SharedPreferences settings){
-        jsonLink = settings.getString(URL_PREF_KEY,DEFAULT_URL) + "pets.json";
+        link = settings.getString(URL_PREF_KEY,DEFAULT_URL);
         //Toast.makeText(this,jsonLink,Toast.LENGTH_LONG).show();
-        Log.d(TAG, jsonLink);
+        Log.d(TAG, link);
     }
 
     // Getters
     public int getCurrentLink() { return currentLink; }
 
     public void getJSON(){
+        String jsonLink = link + "pets.json";
         txtThread = new GetTextThread(jsonLink);
         txtThread.start();
         Log.d(TAG, "getJSON result = " + getResult().toString());
@@ -88,20 +96,41 @@ public class DataVM extends ViewModel {
         boolean check = true;
         try {
             JSONObject jsonObj = new JSONObject(jsonStr);
-            jsonArray = jsonObj.getJSONArray("pets");
+            JSONArray jsonArray = jsonObj.getJSONArray("pets");
             // Iterate through json array
+            // Put pet name in petNames
+            // Put pet name as key and img file name as value in petsAndImgs
+            for (int i = 0; i < jsonArray.length(); i++){
+                JSONObject pet = jsonArray.getJSONObject(i);
+                String name = (String) pet.get(NAME);
+                String file = (String) pet.get(FILE);
+                petNames.add(name);
+                petsAndImgs.put(name, file);
 
-            Log.d(TAG, "setImgLinks : " + jsonArray.toString());
+                Log.d(TAG, "setImgLinks : " + name + " " + file);
+            }
+
+            //Log.d(TAG, "setImgLinks : " + jsonArray.toString());
         }catch (Exception e) {
             check = false;
         }
         return check;
     }
 
-    public JSONArray getJsonArray(){ return jsonArray; }
+    public List<String> getPetsArray(){ return petNames; }
+    public String getPetImg(String petName){
+        if (petsAndImgs.containsKey(petName)){
+            return petsAndImgs.get(petName);
+        }
+        else{
+            return "ERROR - Pet name " + petName + " not in hashmap";
+        }
+    }
 
-    public void getImage(String url){
-        imgThread = new GetImageThread(url);
+    public void getImage(String file){
+        String imgUrl = link + file;
+        Log.d(TAG, "getimg link = " + imgUrl);
+        imgThread = new GetImageThread(imgUrl);
         imgThread.start();
     }
 
