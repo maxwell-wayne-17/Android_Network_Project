@@ -37,6 +37,8 @@ import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     // TODO make all of these private
     private final String TAG = "asdf Main Debug";
@@ -44,8 +46,7 @@ public class MainActivity extends AppCompatActivity {
     DataVM myVM;
     ImageView iv;
     private Spinner spinner;
-    // Used to determine if spinner should be set up
-    private boolean validPets = false;
+    private String result;
 
     // Preference, default to cnu site
     String jsonLink;
@@ -78,14 +79,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                     Log.d(TAG, "on create preference");
-                    myVM.getPrefValues(myPreference);
-                    myVM.getJSON();
+//                    myVM.getPrefValues(myPreference);
+//                    myVM.getJSON();
+                    setupSpinner();
                 }
             };
+        }else{
+            setupSpinner();
         }
         myPreference.registerOnSharedPreferenceChangeListener(listener);
         // Always set preference on create
-        myVM.getPrefValues(myPreference);
+        //myVM.getPrefValues(myPreference);
         setupSpinner();
 
         // Create observer to update UI image
@@ -106,8 +110,10 @@ public class MainActivity extends AppCompatActivity {
                 // Update the UI, in this case, a TextView.
                 Toast.makeText(MainActivity.this,result,Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onChanged listener = " + result);
-                validPets = myVM.setImgLinks(result);
-                setupSpinner();
+                //validPets = myVM.setImgLinks(result);
+                //setupSpinner();
+                // Save results in this class
+                MainActivity.this.result = result;
             }
         };
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
@@ -127,14 +133,22 @@ public class MainActivity extends AppCompatActivity {
     // Set up spinner
     // TODO currently getting called multiple times.  Needs to be set up first in oncreate.  Should track preference changes
     private void setupSpinner(){
-        // Check if valid pets array, if not, leave spinner empty
-        Log.d(TAG, "Spinner set up " + validPets);
-        if (!validPets){
+        // Make sure view model link is up to date
+        myVM.getPrefValues(myPreference);
+        // Get json into results
+        myVM.getJSON();
+        // Check if valid json received, if not, leave spinner empty
+        Log.d(TAG, "Spinner set up first");
+        // Get array from view model
+        List<String> petNames = myVM.setImgLinks(result);
+        // If array is empty, then there was not a valid json passed in, do not set up spinner
+        if (petNames.isEmpty()){
+            spinner = null;
             return;
         }
-        Log.d(TAG, "Spinner set up " + myVM.getPetsArray().toString());
+        Log.d(TAG, "Spinner set up " + petNames.toString());
         // Create adapter
-        ArrayAdapter<String> adapter = new ArrayAdapter(this, R.layout.spinner_item, myVM.getPetsArray());
+        ArrayAdapter<String> adapter = new ArrayAdapter(this, R.layout.spinner_item, petNames);
         // Get reference to the spinner
         spinner = (Spinner) findViewById(R.id.spinner);
         // Bind adapter
