@@ -1,8 +1,12 @@
 package com.example.proj3_max_wayne;
 
+import static android.provider.Settings.System.getString;
+
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -27,7 +31,10 @@ public class DataVM extends ViewModel {
             "https://www.pcs.cnu.edu/~kperkins/pets/p22.png"};
 
     // Must get from settings
-    String jsonLink="https://www.pcs.cnu.edu/~kperkins/pets/pets.json";
+    String jsonLink; //"https://www.pcs.cnu.edu/~kperkins/pets/pets.json";
+    private final String URL_PREF_KEY = "url_preference";
+    private final String DEFAULT_URL = "https://www.pcs.cnu.edu/~kperkins/pets/";
+    private final String TAG = "DataVM Debug";
 
     int currentLink = 0;
 
@@ -51,6 +58,12 @@ public class DataVM extends ViewModel {
             result = new MutableLiveData<String>();
         }
         return result;
+    }
+
+    public void getPrefValues(SharedPreferences settings){
+        jsonLink = settings.getString(URL_PREF_KEY,DEFAULT_URL) + "pets.json";
+        //Toast.makeText(this,jsonLink,Toast.LENGTH_LONG).show();
+        Log.d(TAG, jsonLink);
     }
 
     public void getJSON(){

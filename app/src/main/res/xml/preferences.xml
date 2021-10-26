@@ -2,18 +2,20 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--TODO export to strings xml-->
-    <PreferenceCategory app:title="@string/pref_title"
-        app:summary="@string/listpref_summary">
+    <PreferenceCategory
+        app:allowDividerBelow="true"
+        android:title="@string/pref_title"
+        android:summary="@string/listpref_summary">
 
         <ListPreference
             android:key="@string/url_pref"
-            android:title="@string/pref_title"
-            android:summary="@string/listpref_summary"
             android:entries="@array/JSON_URL_NAME"
             android:entryValues="@array/JSON_URL">
         </ListPreference>
 
+    </PreferenceCategory>
+
+    <PreferenceCategory>
     </PreferenceCategory>
 
 </PreferenceScreen>

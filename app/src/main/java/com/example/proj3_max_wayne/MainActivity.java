@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             listener = new SharedPreferences.OnSharedPreferenceChangeListener(){
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                    getPrefValues(myPreference);
+                    myVM.getPrefValues(myPreference);
                 }
             };
         }
@@ -128,10 +128,8 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // TODO maybe this should call the vm
-    private void getPrefValues(SharedPreferences settings){
-        jsonLink = settings.getString(getString(R.string.url_pref),getString(R.string.default_url));
-        Toast.makeText(MainActivity.this,jsonLink,Toast.LENGTH_LONG).show();
-    }
-
+//    private void getPrefValues(SharedPreferences settings){
+//        jsonLink = settings.getString(getString(R.string.url_pref),getString(R.string.default_url));
+//        Toast.makeText(MainActivity.this,jsonLink,Toast.LENGTH_LONG).show();
+//    }
 }
