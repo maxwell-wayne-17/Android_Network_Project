@@ -79,18 +79,18 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                     Log.d(TAG, "on create preference");
-//                    myVM.getPrefValues(myPreference);
-//                    myVM.getJSON();
-                    setupSpinner();
+                    myVM.getPrefValues(myPreference);
+                    myVM.getJSON();
+                    //setupSpinner();
                 }
             };
-        }else{
-            setupSpinner();
         }
         myPreference.registerOnSharedPreferenceChangeListener(listener);
+        myVM.getPrefValues(myPreference);
         // Always set preference on create
         //myVM.getPrefValues(myPreference);
-        setupSpinner();
+        //Log.d(TAG, "On create spinner set up call");
+        //setupSpinner();
 
         // Create observer to update UI image
         final Observer<Bitmap> bmpObserver = new Observer<Bitmap>() {
@@ -111,13 +111,14 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,result,Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onChanged listener = " + result);
                 //validPets = myVM.setImgLinks(result);
-                //setupSpinner();
                 // Save results in this class
                 MainActivity.this.result = result;
+                setupSpinner(result);
             }
         };
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
         myVM.getResult().observe(this,resultObserver);
+        myVM.getJSON();
 
         // FAB on click listeners
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
@@ -132,11 +133,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Set up spinner
     // TODO currently getting called multiple times.  Needs to be set up first in oncreate.  Should track preference changes
-    private void setupSpinner(){
+    private void setupSpinner(String result){
         // Make sure view model link is up to date
-        myVM.getPrefValues(myPreference);
-        // Get json into results
-        myVM.getJSON();
+//        myVM.getPrefValues(myPreference);
+//        // Get json into results
+//        myVM.getJSON();
         // Check if valid json received, if not, leave spinner empty
         Log.d(TAG, "Spinner set up first");
         // Get array from view model
@@ -144,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         // If array is empty, then there was not a valid json passed in, do not set up spinner
         if (petNames.isEmpty()){
             spinner = null;
+            Log.d(TAG, "list is empty");
             return;
         }
         Log.d(TAG, "Spinner set up " + petNames.toString());
