@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.lifecycle.Observer;
@@ -33,6 +34,7 @@ import androidx.preference.PreferenceManager;
 
 public class MainActivity extends AppCompatActivity {
     // TODO make all of these private
+    private final String TAG = "asdf Main Debug";
     // Persists across config changes
     DataVM myVM;
     ImageView iv;
@@ -58,6 +60,23 @@ public class MainActivity extends AppCompatActivity {
 
         // Create ViewModel
         myVM = new ViewModelProvider(this).get(DataVM.class);
+
+        // Set up preferences
+        if (myPreference == null){
+            myPreference = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        }
+        if (listener == null){
+            listener = new SharedPreferences.OnSharedPreferenceChangeListener(){
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                    Log.d(TAG, "on create preference");
+                    myVM.getPrefValues(myPreference);
+                }
+            };
+        }
+        myPreference.registerOnSharedPreferenceChangeListener(listener);
+        // Always set preference on create
+        myVM.getPrefValues(myPreference);
 
         // Create observer to update UI image
         final Observer<Bitmap> bmpObserver = new Observer<Bitmap>() {
@@ -86,23 +105,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String url=myVM.links[myVM.currentLink++%myVM.links.length];
+                myVM.getJSON();
                 myVM.getImage(url);
             }
         });
 
-        // Set up preferences
-        if (myPreference == null){
-            myPreference = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        }
-        if (listener == null){
-            listener = new SharedPreferences.OnSharedPreferenceChangeListener(){
-                @Override
-                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                    myVM.getPrefValues(myPreference);
-                }
-            };
-        }
-        myPreference.registerOnSharedPreferenceChangeListener(listener);
+
     }
 
     @Override
@@ -127,9 +135,4 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-//    private void getPrefValues(SharedPreferences settings){
-//        jsonLink = settings.getString(getString(R.string.url_pref),getString(R.string.default_url));
-//        Toast.makeText(MainActivity.this,jsonLink,Toast.LENGTH_LONG).show();
-//    }
 }

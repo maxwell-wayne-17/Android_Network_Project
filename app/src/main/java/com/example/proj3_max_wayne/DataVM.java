@@ -69,6 +69,7 @@ public class DataVM extends ViewModel {
     public void getJSON(){
         txtThread = new GetTextThread(jsonLink);
         txtThread.start();
+        Log.d(TAG, getResult().toString());
     }
 
     public void getImage(String url){
@@ -87,6 +88,7 @@ public class DataVM extends ViewModel {
 
         public void run() {
             try {
+                Log.d(TAG, "url = " + url);
                 URL url1 = new URL(url);
 
                 HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
@@ -101,7 +103,6 @@ public class DataVM extends ViewModel {
                 try {
                     // Official connection
                     connection.connect();
-
                     statusCode = connection.getResponseCode();
                     if (statusCode / 100 != 2) {
                         // Failed
