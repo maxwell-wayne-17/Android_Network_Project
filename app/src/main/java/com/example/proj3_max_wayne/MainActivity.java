@@ -3,6 +3,7 @@ package com.example.proj3_max_wayne;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -112,28 +113,20 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onChanged listener = " + result);
                 //validPets = myVM.setImgLinks(result);
                 // Save results in this class
+
                 MainActivity.this.result = result;
-                setupSpinner(result);
+                //setupSpinner(result);
+                handleResults(result);
             }
         };
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
         myVM.getResult().observe(this,resultObserver);
         myVM.getJSON();
-
-        // FAB on click listeners
-        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String url=myVM.links[myVM.currentLink++%myVM.links.length];
-                //myVM.getJSON();
-                myVM.getImage(url);
-            }
-        });
     }
 
     // Set up spinner
     // TODO currently getting called multiple times.  Needs to be set up first in oncreate.  Should track preference changes
-    private void setupSpinner(String result){
+    private void setupSpinner(List<String> petNames){
         // Make sure view model link is up to date
 //        myVM.getPrefValues(myPreference);
 //        // Get json into results
@@ -141,13 +134,13 @@ public class MainActivity extends AppCompatActivity {
         // Check if valid json received, if not, leave spinner empty
         Log.d(TAG, "Spinner set up first");
         // Get array from view model
-        List<String> petNames = myVM.setImgLinks(result);
-        // If array is empty, then there was not a valid json passed in, do not set up spinner
-        if (petNames.isEmpty()){
-            spinner = null;
-            Log.d(TAG, "list is empty");
-            return;
-        }
+//        List<String> petNames = myVM.setImgLinks(result);
+//        // If array is empty, then there was not a valid json passed in, do not set up spinner
+//        if (petNames.isEmpty()){
+//            spinner = null;
+//            Log.d(TAG, "list is empty");
+//            return;
+//        }
         Log.d(TAG, "Spinner set up " + petNames.toString());
         // Create adapter
         ArrayAdapter<String> adapter = new ArrayAdapter(this, R.layout.spinner_item, petNames);
@@ -174,6 +167,28 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+    }
+
+    private void handleResults(String result){
+        // Test is json is valid through setImg links
+        // if invalid, clear spinner, set scared cat background, set text
+        // if valid, set up spinner
+        List<String> petNames = myVM.setImgLinks(result);
+        if (petNames.isEmpty()){
+            if (spinner != null) {
+                // Clear Spinner
+                spinner.setAdapter(null);
+            }
+            Log.d(TAG, "Handle results empty array");
+            // Reset background
+            Bitmap failedNetwork = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_scared_cat);
+            iv.setImageResource(R.mipmap.ic_portrait_cat);
+            // TODO add textveiw
+        }
+        else{
+            Log.d(TAG, "Handle results not empty array");
+            setupSpinner(petNames);
+        }
     }
 
     @Override

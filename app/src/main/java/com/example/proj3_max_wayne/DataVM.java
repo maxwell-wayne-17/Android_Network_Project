@@ -5,6 +5,7 @@ import static android.provider.Settings.System.getString;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.icu.text.Edits;
 import android.util.Log;
 import android.widget.Toast;
@@ -32,10 +33,10 @@ public class DataVM extends ViewModel {
     // TODO - make variables private and use getters
 
     // Hardcoded for now, must be dynamically pulled
-    String links[] = {  "p33.png",
-            "p44.png",
-            "p55.png",
-            "p22.png"};
+//    String links[] = {  "p33.png",
+//            "p44.png",
+//            "p55.png",
+//            "p22.png"};
 
     // Consts for accessing json object
     private final String NAME = "name";
@@ -52,7 +53,7 @@ public class DataVM extends ViewModel {
     private final String DEFAULT_URL = "https://www.pcs.cnu.edu/~kperkins/pets/";
     private final String TAG = "DataVM Debug";
 
-    int currentLink = 0;
+//    int currentLink = 0;
 
     // Threads
     GetImageThread imgThread;
@@ -81,9 +82,6 @@ public class DataVM extends ViewModel {
         //Toast.makeText(this,jsonLink,Toast.LENGTH_LONG).show();
         Log.d(TAG, link);
     }
-
-    // Getters
-    public int getCurrentLink() { return currentLink; }
 
     public void getJSON(){
         String jsonLink = link + "pets.json";
