@@ -5,11 +5,15 @@ import static android.provider.Settings.System.getString;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.icu.text.Edits;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -19,6 +23,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class DataVM extends ViewModel {
 
@@ -29,6 +36,8 @@ public class DataVM extends ViewModel {
             "https://www.pcs.cnu.edu/~kperkins/pets/p44.png",
             "https://www.pcs.cnu.edu/~kperkins/pets/p55.png",
             "https://www.pcs.cnu.edu/~kperkins/pets/p22.png"};
+
+    private JSONArray jsonArray;
 
     // Must get from settings
     String jsonLink; //"https://www.pcs.cnu.edu/~kperkins/pets/pets.json";
@@ -66,11 +75,30 @@ public class DataVM extends ViewModel {
         Log.d(TAG, jsonLink);
     }
 
+    // Getters
+    public int getCurrentLink() { return currentLink; }
+
     public void getJSON(){
         txtThread = new GetTextThread(jsonLink);
         txtThread.start();
-        Log.d(TAG, getResult().toString());
+        Log.d(TAG, "getJSON result = " + getResult().toString());
     }
+
+    public boolean setImgLinks(String jsonStr){
+        boolean check = true;
+        try {
+            JSONObject jsonObj = new JSONObject(jsonStr);
+            jsonArray = jsonObj.getJSONArray("pets");
+            // Iterate through json array
+
+            Log.d(TAG, "setImgLinks : " + jsonArray.toString());
+        }catch (Exception e) {
+            check = false;
+        }
+        return check;
+    }
+
+    public JSONArray getJsonArray(){ return jsonArray; }
 
     public void getImage(String url){
         imgThread = new GetImageThread(url);
@@ -120,6 +148,11 @@ public class DataVM extends ViewModel {
                     }
 
                     result.postValue(sb.toString());
+
+                    // test JSON stuff
+                    //JSONObject jsonObj = new JSONObject(sb.toString());
+                    //JSONArray jsonArr = jsonObj.getJSONArray("pets");
+                    //Log.d(TAG, jsonObj.toString());
 
                 } finally {
                     // Close resource
@@ -180,7 +213,7 @@ public class DataVM extends ViewModel {
                     byte[] imageData = baf.toByteArray();
                     // Can only postValue from background thread, not setValue
                     bmp.postValue(BitmapFactory.decodeByteArray(imageData, 0, imageData.length));
-                    result.postValue(url);
+                    //result.postValue(url);
                 } finally {
                     // Close resources
                     if (bis != null){ bis.close(); }

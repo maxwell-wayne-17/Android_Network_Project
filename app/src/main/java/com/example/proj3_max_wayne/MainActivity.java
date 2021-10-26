@@ -95,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(@Nullable final String result) {
                 // Update the UI, in this case, a TextView.
                 Toast.makeText(MainActivity.this,result,Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onChanged listener = " + result);
+                myVM.setImgLinks(result);
             }
         };
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
