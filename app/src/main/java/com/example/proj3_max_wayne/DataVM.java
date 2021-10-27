@@ -37,7 +37,9 @@ public class DataVM extends ViewModel {
     private final String FILE = "file";
     // Will hold pet names as keys and their image file name as values
     // This will be utilized in the getImg call
-    private HashMap<String,String> petsAndImgs = new HashMap<>();
+    private HashMap<String,String> petsAndImgs; //= new HashMap<>();
+    // Used for displaying error status code
+    private int vMStatusCode;
 
     // Must get from settings
     String link;
@@ -82,6 +84,7 @@ public class DataVM extends ViewModel {
     public List<String> setImgLinks(String jsonStr){
         //boolean check = true;
         List<String> petNames = new ArrayList<>();
+        petsAndImgs = new HashMap<String, String>();
         try {
             JSONObject jsonObj = new JSONObject(jsonStr);
             JSONArray jsonArray = jsonObj.getJSONArray("pets");
@@ -119,6 +122,9 @@ public class DataVM extends ViewModel {
         imgThread.start();
     }
 
+    private void setVmStatusCode(int statusCode){ vMStatusCode = statusCode;  }
+    public int getVmStatusCode(){ return vMStatusCode; }
+
     public class GetTextThread extends Thread {
         private static final String TAG = "GetTextThread";
         private static final int    DEFAULT_BUFFER_SIZE = 8096;
@@ -146,6 +152,7 @@ public class DataVM extends ViewModel {
                     // Official connection
                     connection.connect();
                     statusCode = connection.getResponseCode();
+                    setVmStatusCode(statusCode);
                     if (statusCode / 100 != 2) {
                         // Failed
                         result.postValue("Failed, Status code = " + Integer.toString(statusCode));
@@ -200,6 +207,7 @@ public class DataVM extends ViewModel {
                  connection.connect();
 
                 int statusCode = connection.getResponseCode();
+                setVmStatusCode(statusCode);
 
                 if (statusCode / 100 != 2) {
                     result.postValue("Failed! Statuscode returned is " + Integer.toString(statusCode));

@@ -13,4 +13,6 @@
     <string name="pref_title">Info</string>
     <string name="listpref_summary">Select which site to get JSON data from</string>
     <string name="default_url">https://www.pcs.cnu.edu/~kperkins/pets/</string>
+    <string name="no_connection_code">ISSUES!</string>
+    <string name="no_connection_msg">Network is unreachable</string>
 </resources>

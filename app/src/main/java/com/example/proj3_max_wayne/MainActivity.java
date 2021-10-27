@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             Log.d(TAG, "Handle results not empty array");
-            setTvsInvis();
+            setTvsVisibility(false);
             setupSpinner(petNames);
         }
     }
@@ -171,19 +171,34 @@ public class MainActivity extends AppCompatActivity {
         Bitmap failedNetwork = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_scared_cat);
         iv.setImageResource(R.mipmap.ic_portrait_cat);
         if (!checkConnection()){
-            tvStatusCode.setText("ISSUES!");
-            tvStatusCode.setVisibility(View.VISIBLE);
-            tvStatusMsg.setText("Network is unreachable");
-            tvStatusMsg.setVisibility(View.VISIBLE);
+            tvStatusCode.setText(R.string.no_connection_code);
+            tvStatusMsg.setText(R.string.no_connection_msg);
+            setTvsVisibility(true);
+            setTvsText(getString(R.string.no_connection_code), getString(R.string.no_connection_msg));
+
         }
         else{
             // Need to extract status code and exception message or link
+            // Post status code
+            // Post link (try and get full link with json or img file)
+            Log.d(TAG, "Result error string : " + result);
+
         }
     }
 
-    private void setTvsInvis(){
-        tvStatusCode.setVisibility(View.INVISIBLE);
-        tvStatusMsg.setVisibility(View.INVISIBLE);
+    private void setTvsVisibility(Boolean visibile){
+        if (visibile){
+            tvStatusCode.setVisibility(View.VISIBLE);
+            tvStatusMsg.setVisibility(View.VISIBLE);
+        }
+        else {
+            tvStatusCode.setVisibility(View.INVISIBLE);
+            tvStatusMsg.setVisibility(View.INVISIBLE);
+        }
+    }
+    private void setTvsText(String statusCode, String statusMsg){
+        tvStatusCode.setText(statusCode);
+        tvStatusMsg.setText(statusMsg);
     }
 
     @Override
