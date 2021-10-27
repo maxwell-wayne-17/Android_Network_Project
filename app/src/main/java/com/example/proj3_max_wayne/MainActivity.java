@@ -44,13 +44,16 @@ public class MainActivity extends AppCompatActivity {
     // TODO make all of these private
     private final String TAG = "asdf Main Debug";
     // Persists across config changes
-    DataVM myVM;
-    ImageView iv;
+    private DataVM myVM;
+
+    private ImageView iv;
+    private TextView tvStatusCode;
+    private TextView tvStatusMsg;
     private Spinner spinner;
     private String result;
 
-    // Preference, default to cnu site
-    String jsonLink;
+    private ConnectivityCheck myCheck;
+
     SharedPreferences myPreference;
     SharedPreferences.OnSharedPreferenceChangeListener listener = null;
 
@@ -61,12 +64,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         iv = findViewById(R.id.imageView1);
+        tvStatusCode = findViewById(R.id.statusCode);
+        tvStatusMsg = findViewById(R.id.statusMsg);
 
         // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Don't display title
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        // Check connectivity
+        myCheck = new ConnectivityCheck(this);
 
         // Create ViewModel
         myVM = new ViewModelProvider(this).get(DataVM.class);
@@ -82,16 +90,11 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "on create preference");
                     myVM.getPrefValues(myPreference);
                     myVM.getJSON();
-                    //setupSpinner();
                 }
             };
         }
         myPreference.registerOnSharedPreferenceChangeListener(listener);
         myVM.getPrefValues(myPreference);
-        // Always set preference on create
-        //myVM.getPrefValues(myPreference);
-        //Log.d(TAG, "On create spinner set up call");
-        //setupSpinner();
 
         // Create observer to update UI image
         final Observer<Bitmap> bmpObserver = new Observer<Bitmap>() {
@@ -111,11 +114,6 @@ public class MainActivity extends AppCompatActivity {
                 // Update the UI, in this case, a TextView.
                 Toast.makeText(MainActivity.this,result,Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onChanged listener = " + result);
-                //validPets = myVM.setImgLinks(result);
-                // Save results in this class
-
-                MainActivity.this.result = result;
-                //setupSpinner(result);
                 handleResults(result);
             }
         };
@@ -125,22 +123,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Set up spinner
-    // TODO currently getting called multiple times.  Needs to be set up first in oncreate.  Should track preference changes
     private void setupSpinner(List<String> petNames){
-        // Make sure view model link is up to date
-//        myVM.getPrefValues(myPreference);
-//        // Get json into results
-//        myVM.getJSON();
         // Check if valid json received, if not, leave spinner empty
         Log.d(TAG, "Spinner set up first");
-        // Get array from view model
-//        List<String> petNames = myVM.setImgLinks(result);
-//        // If array is empty, then there was not a valid json passed in, do not set up spinner
-//        if (petNames.isEmpty()){
-//            spinner = null;
-//            Log.d(TAG, "list is empty");
-//            return;
-//        }
         Log.d(TAG, "Spinner set up " + petNames.toString());
         // Create adapter
         ArrayAdapter<String> adapter = new ArrayAdapter(this, R.layout.spinner_item, petNames);
@@ -181,14 +166,36 @@ public class MainActivity extends AppCompatActivity {
             }
             Log.d(TAG, "Handle results empty array");
             // Reset background
-            Bitmap failedNetwork = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_scared_cat);
-            iv.setImageResource(R.mipmap.ic_portrait_cat);
-            // TODO add textveiw
+            setErrorConnectionGUI(result);
         }
         else{
             Log.d(TAG, "Handle results not empty array");
+            setTvsInvis();
             setupSpinner(petNames);
         }
+    }
+
+    private boolean checkConnection(){
+        return myCheck.isNetworkReachable() || myCheck.isWiFiReachable();
+    }
+
+    private void setErrorConnectionGUI(String result){
+        Bitmap failedNetwork = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_scared_cat);
+        iv.setImageResource(R.mipmap.ic_portrait_cat);
+        if (!checkConnection()){
+            tvStatusCode.setText("ISSUES!");
+            tvStatusCode.setVisibility(View.VISIBLE);
+            tvStatusMsg.setText("Network is unreachable");
+            tvStatusMsg.setVisibility(View.VISIBLE);
+        }
+        else{
+            // Need to extract status code and exception message or link
+        }
+    }
+
+    private void setTvsInvis(){
+        tvStatusCode.setVisibility(View.INVISIBLE);
+        tvStatusMsg.setVisibility(View.INVISIBLE);
     }
 
     @Override

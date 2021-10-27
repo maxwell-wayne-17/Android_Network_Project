@@ -32,17 +32,9 @@ public class DataVM extends ViewModel {
 
     // TODO - make variables private and use getters
 
-    // Hardcoded for now, must be dynamically pulled
-//    String links[] = {  "p33.png",
-//            "p44.png",
-//            "p55.png",
-//            "p22.png"};
-
     // Consts for accessing json object
     private final String NAME = "name";
     private final String FILE = "file";
-    // Will hold pet names for spinner
-    //private List<String> petNames = new ArrayList<>();
     // Will hold pet names as keys and their image file name as values
     // This will be utilized in the getImg call
     private HashMap<String,String> petsAndImgs = new HashMap<>();
@@ -52,8 +44,6 @@ public class DataVM extends ViewModel {
     private final String URL_PREF_KEY = "url_preference";
     private final String DEFAULT_URL = "https://www.pcs.cnu.edu/~kperkins/pets/";
     private final String TAG = "DataVM Debug";
-
-//    int currentLink = 0;
 
     // Threads
     GetImageThread imgThread;
@@ -79,7 +69,6 @@ public class DataVM extends ViewModel {
 
     public void getPrefValues(SharedPreferences settings){
         link = settings.getString(URL_PREF_KEY,DEFAULT_URL);
-        //Toast.makeText(this,jsonLink,Toast.LENGTH_LONG).show();
         Log.d(TAG, link);
     }
 
@@ -108,15 +97,12 @@ public class DataVM extends ViewModel {
 
                 Log.d(TAG, "setImgLinks : " + name + " " + file);
             }
-
-            //Log.d(TAG, "setImgLinks : " + jsonArray.toString());
         }catch (Exception e) {
             Log.d(TAG, "setImgLinks : " + e.toString());;
         }
         return petNames;
     }
 
-    //public List<String> getPetsArray(){ return petNames; }
     public String getPetImg(String petName){
         if (petsAndImgs.containsKey(petName)){
             return petsAndImgs.get(petName);
@@ -176,11 +162,6 @@ public class DataVM extends ViewModel {
                     }
 
                     result.postValue(sb.toString());
-
-                    // test JSON stuff
-                    //JSONObject jsonObj = new JSONObject(sb.toString());
-                    //JSONArray jsonArr = jsonObj.getJSONArray("pets");
-                    //Log.d(TAG, jsonObj.toString());
 
                 } finally {
                     // Close resource
