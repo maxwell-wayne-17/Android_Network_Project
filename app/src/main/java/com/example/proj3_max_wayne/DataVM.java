@@ -155,7 +155,7 @@ public class DataVM extends ViewModel {
                     setVmStatusCode(statusCode);
                     if (statusCode / 100 != 2) {
                         // Failed
-                        result.postValue("Failed, Status code = " + Integer.toString(statusCode));
+                        result.postValue( url + " failed!");
                         return;
                     }
 
@@ -178,7 +178,7 @@ public class DataVM extends ViewModel {
 
             } catch (Exception e){
                 Log.d(TAG, e.toString());
-                result.postValue(e.toString());
+                result.postValue( url + " failed!");;
             }
         }
     }
@@ -210,7 +210,7 @@ public class DataVM extends ViewModel {
                 setVmStatusCode(statusCode);
 
                 if (statusCode / 100 != 2) {
-                    result.postValue("Failed! Statuscode returned is " + Integer.toString(statusCode));
+                    result.postValue( url + " failed!");
                     return;
                 }
 

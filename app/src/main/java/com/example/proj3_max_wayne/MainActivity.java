@@ -51,9 +51,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        iv = findViewById(R.id.imageView1);
-        tvStatusCode = findViewById(R.id.statusCode);
-        tvStatusMsg = findViewById(R.id.statusMsg);
+        // Set reference to widgets
+        iv = (ImageView) findViewById(R.id.imageView1);
+        tvStatusCode = (TextView) findViewById(R.id.statusCode);
+        tvStatusMsg = (TextView) findViewById(R.id.statusMsg);
+        spinner = (Spinner) findViewById(R.id.spinner);
 
         // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -95,12 +97,11 @@ public class MainActivity extends AppCompatActivity {
         // Observe the LiveData
         myVM.getbmp().observe(this, bmpObserver);
 
-        // Create the observer which updates the UI with a toast
+        // Create the observer which updates the UI
         final Observer<String> resultObserver = new Observer<String>() {
             @Override
             public void onChanged(@Nullable final String result) {
-                // Update the UI, in this case, a TextView.
-                Toast.makeText(MainActivity.this,result,Toast.LENGTH_SHORT).show();
+                // Update the UI
                 Log.d(TAG, "onChanged listener = " + result);
                 handleResults(result);
             }
@@ -112,13 +113,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Set up spinner
     private void setupSpinner(List<String> petNames){
-        // Check if valid json received, if not, leave spinner empty
-        Log.d(TAG, "Spinner set up first");
-        Log.d(TAG, "Spinner set up " + petNames.toString());
         // Create adapter
         ArrayAdapter<String> adapter = new ArrayAdapter(this, R.layout.spinner_item, petNames);
-        // Get reference to the spinner
-        spinner = (Spinner) findViewById(R.id.spinner);
+        spinner.setVisibility(View.VISIBLE);
         // Bind adapter
         spinner.setAdapter(adapter);
         // On click listener
@@ -133,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
                 myVM.getImage(file);
                 if (parent.getChildAt(SELECTED_ITEM) != null){
                     ( (TextView) parent.getChildAt(SELECTED_ITEM) ).setTextColor(Color.WHITE);
-                    Toast.makeText(MainActivity.this,(String) parent.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
@@ -168,20 +164,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setErrorConnectionGUI(String result){
-        Bitmap failedNetwork = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_scared_cat);
-        iv.setImageResource(R.mipmap.ic_portrait_cat);
-        if (!checkConnection()){
-            tvStatusCode.setText(R.string.no_connection_code);
-            tvStatusMsg.setText(R.string.no_connection_msg);
-            setTvsVisibility(true);
-            setTvsText(getString(R.string.no_connection_code), getString(R.string.no_connection_msg));
+        // Set up new image view
+        iv.setImageResource(R.drawable.funny_cat2);
+        iv.setScaleType(ImageView.ScaleType.FIT_XY);
 
+        setTvsVisibility(true);
+        spinner.setVisibility(View.INVISIBLE);
+        if (!checkConnection()){
+            setTvsText(getString(R.string.no_connection_code), getString(R.string.no_connection_msg));
         }
         else{
             // Need to extract status code and exception message or link
             // Post status code
             // Post link (try and get full link with json or img file)
             Log.d(TAG, "Result error string : " + result);
+            setTvsText(Integer.toString(myVM.getVmStatusCode()), result);
+
 
         }
     }

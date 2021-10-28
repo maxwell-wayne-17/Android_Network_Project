@@ -36,8 +36,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="default text"
+        android:gravity="center"
         android:textSize="50sp"
-        android:textColor="@color/black"
+        android:textColor="@android:color/holo_red_dark"
         android:visibility="visible"
         android:layout_gravity="center">
 
@@ -48,9 +49,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:gravity="center"
         android:text="This contains the status message"
         android:textSize="20sp"
-        android:textColor="@color/black"
+        android:textColor="@android:color/holo_red_dark"
         android:visibility="visible"
         app:layout_anchor="@id/statusCode"
         app:layout_anchorGravity="center_horizontal">

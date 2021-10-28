@@ -13,7 +13,7 @@
         android:layout_weight="1"
         android:gravity="start"
         android:scaleType="fitXY"
-        android:src="@mipmap/ic_portrait_cat"
+        android:src="@drawable/funny_cat2"
         tools:layout_editor_absoluteX="59dp"
         tools:layout_editor_absoluteY="-31dp" />
 
