@@ -196,8 +196,6 @@ public class MainActivity extends AppCompatActivity {
             // Post link (try and get full link with json or img file)
             Log.d(TAG, "Result error string : " + result);
             setTvsText(Integer.toString(myVM.getVmStatusCode()), result);
-
-
         }
     }
 
