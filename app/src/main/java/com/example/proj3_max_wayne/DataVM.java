@@ -1,14 +1,9 @@
 package com.example.proj3_max_wayne;
 
-import static android.provider.Settings.System.getString;
-
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.icu.text.Edits;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -22,7 +17,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,19 +24,18 @@ import java.util.List;
 
 public class DataVM extends ViewModel {
 
-    // TODO - make variables private and use getters
-
     // Consts for accessing json object
+    private final String GET = "GET";
     private final String NAME = "name";
     private final String FILE = "file";
     // Will hold pet names as keys and their image file name as values
     // This will be utilized in the getImg call
-    private HashMap<String,String> petsAndImgs; //= new HashMap<>();
+    private HashMap<String,String> petsAndImgs;
     // Used for displaying error status code
     private int vMStatusCode;
 
     // Must get from settings
-    String link;
+    private String link;
     private final String URL_PREF_KEY = "url_preference";
     private final String DEFAULT_URL = "https://www.pcs.cnu.edu/~kperkins/pets/";
     private final String TAG = "DataVM Debug";
@@ -55,7 +48,7 @@ public class DataVM extends ViewModel {
     private MutableLiveData<Bitmap> bmp;
     public MutableLiveData<Bitmap> getbmp(){
         if (bmp == null){
-            bmp = new MutableLiveData<Bitmap>();
+            bmp = new MutableLiveData<>();
         }
         return bmp;
     }
@@ -64,7 +57,7 @@ public class DataVM extends ViewModel {
     private MutableLiveData<String> result;
     public MutableLiveData<String> getResult(){
         if (result == null){
-            result = new MutableLiveData<String>();
+            result = new MutableLiveData<>();
         }
         return result;
     }
@@ -84,7 +77,7 @@ public class DataVM extends ViewModel {
     public List<String> setImgLinks(String jsonStr){
         //boolean check = true;
         List<String> petNames = new ArrayList<>();
-        petsAndImgs = new HashMap<String, String>();
+        petsAndImgs = new HashMap<>();
         try {
             JSONObject jsonObj = new JSONObject(jsonStr);
             JSONArray jsonArray = jsonObj.getJSONArray("pets");
@@ -101,7 +94,7 @@ public class DataVM extends ViewModel {
                 Log.d(TAG, "setImgLinks : " + name + " " + file);
             }
         }catch (Exception e) {
-            Log.d(TAG, "setImgLinks : " + e.toString());;
+            Log.d(TAG, "setImgLinks : " + e.toString());
         }
         return petNames;
     }
@@ -117,7 +110,7 @@ public class DataVM extends ViewModel {
 
     public void getImage(String file){
         String imgUrl = link + file;
-        Log.d(TAG, "getimg link = " + imgUrl);
+        Log.d(TAG, "getImg link = " + imgUrl);
         imgThread = new GetImageThread(imgUrl);
         imgThread.start();
     }
@@ -140,8 +133,7 @@ public class DataVM extends ViewModel {
                 URL url1 = new URL(url);
 
                 HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
-                // Consider moving get and others to final string constants
-                connection.setRequestMethod("GET");
+                connection.setRequestMethod(GET);
                 connection.setReadTimeout(TIME_OUT);
                 connection.setConnectTimeout(TIME_OUT);
                 // Accept character data
@@ -178,7 +170,7 @@ public class DataVM extends ViewModel {
 
             } catch (Exception e){
                 Log.d(TAG, e.toString());
-                result.postValue( url + " failed!");;
+                result.postValue( url + " failed!");
             }
         }
     }
@@ -200,7 +192,7 @@ public class DataVM extends ViewModel {
 
                 HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
 
-                 connection.setRequestMethod("GET");
+                 connection.setRequestMethod(GET);
                  connection.setReadTimeout(TIME_OUT);
                  connection.setConnectTimeout(TIME_OUT);
 

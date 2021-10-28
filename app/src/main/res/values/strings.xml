@@ -15,4 +15,6 @@
     <string name="default_url">https://www.pcs.cnu.edu/~kperkins/pets/</string>
     <string name="no_connection_code">ISSUES!</string>
     <string name="no_connection_msg">Network is unreachable</string>
+    <string name="default_msg">This contains the status message</string>
+    <string name="default_code">default text</string>
 </resources>

@@ -1,9 +1,9 @@
 package com.example.proj3_max_wayne;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,14 +11,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -29,8 +29,7 @@ import androidx.preference.PreferenceManager;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    // TODO make all of these private
-    private final String TAG = "asdf Main Debug";
+    private final String TAG = "HapyHaloweenDr.Perkins!";
     // Persists across config changes
     private DataVM myVM;
 
@@ -38,12 +37,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvStatusCode;
     private TextView tvStatusMsg;
     private Spinner spinner;
-    private String result;
 
     private ConnectivityCheck myCheck;
 
-    SharedPreferences myPreference;
-    SharedPreferences.OnSharedPreferenceChangeListener listener = null;
+    private SharedPreferences myPreference;
+    private SharedPreferences.OnSharedPreferenceChangeListener listener = null;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -52,16 +50,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // Set reference to widgets
-        iv = (ImageView) findViewById(R.id.imageView1);
-        tvStatusCode = (TextView) findViewById(R.id.statusCode);
-        tvStatusMsg = (TextView) findViewById(R.id.statusMsg);
-        spinner = (Spinner) findViewById(R.id.spinner);
+        iv = findViewById(R.id.imageView1);
+        tvStatusCode = findViewById(R.id.statusCode);
+        tvStatusMsg = findViewById(R.id.statusMsg);
+        spinner = findViewById(R.id.spinner);
 
         // Set up toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Don't display title
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Check connectivity
         myCheck = new ConnectivityCheck(this);
@@ -74,41 +73,59 @@ public class MainActivity extends AppCompatActivity {
             myPreference = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         }
         if (listener == null){
-            listener = new SharedPreferences.OnSharedPreferenceChangeListener(){
-                @Override
-                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                    Log.d(TAG, "on create preference");
-                    myVM.getPrefValues(myPreference);
-                    myVM.getJSON();
-                }
+            listener = (sharedPreferences, key) -> {
+                Log.d(TAG, "on create preference");
+                myVM.getPrefValues(myPreference);
+                myVM.getJSON();
             };
         }
         myPreference.registerOnSharedPreferenceChangeListener(listener);
         myVM.getPrefValues(myPreference);
 
         // Create observer to update UI image
-        final Observer<Bitmap> bmpObserver = new Observer<Bitmap>() {
-            @Override
-            public void onChanged(@Nullable final Bitmap bitmap) {
-                // Update UI
-                iv.setImageBitmap(bitmap);
-            }
+        final Observer<Bitmap> bmpObserver = bitmap -> {
+            // Update UI Image with animation
+            imageViewAnimatedChange(getApplicationContext(), iv, bitmap);
         };
         // Observe the LiveData
         myVM.getbmp().observe(this, bmpObserver);
 
         // Create the observer which updates the UI
-        final Observer<String> resultObserver = new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable final String result) {
-                // Update the UI
-                Log.d(TAG, "onChanged listener = " + result);
-                handleResults(result);
-            }
+        final Observer<String> resultObserver = result -> {
+            // Update the UI
+            Log.d(TAG, "onChanged listener = " + result);
+            handleResults(result);
         };
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
         myVM.getResult().observe(this,resultObserver);
         myVM.getJSON();
+    }
+
+    // Add animation to changing image
+    private void imageViewAnimatedChange(Context c, final ImageView iv, final Bitmap new_image){
+        final Animation anim_out = AnimationUtils.loadAnimation(c, android.R.anim.fade_out);
+        final Animation anim_in = AnimationUtils.loadAnimation(c, android.R.anim.fade_in);
+        anim_out.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                iv.setImageBitmap(new_image);
+                anim_in.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {}
+                    @Override
+                    public void onAnimationEnd(Animation animation) {}
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {}
+                });
+                iv.startAnimation(anim_in);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+        iv.startAnimation(anim_out);
     }
 
     // Set up spinner
@@ -164,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setErrorConnectionGUI(String result){
-        // Set up new image view
+        // Set up new image view, no animation... this cat should jump at you
         iv.setImageResource(R.drawable.funny_cat2);
         iv.setScaleType(ImageView.ScaleType.FIT_XY);
 

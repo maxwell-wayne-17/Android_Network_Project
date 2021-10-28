@@ -31,31 +31,36 @@
 
     <include layout="@layout/content_main" />
 
-    <TextView
-        android:id="@+id/statusCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="default text"
-        android:gravity="center"
-        android:textSize="50sp"
-        android:textColor="@android:color/holo_red_dark"
-        android:visibility="visible"
-        android:layout_gravity="center">
-
-    </TextView>
 
     <TextView
         android:id="@+id/statusMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:text="This contains the status message"
+        android:text="@string/default_msg"
         android:textSize="20sp"
-        android:textColor="@android:color/holo_red_dark"
+        android:background="@color/orange_primary"
+        android:textColor="@color/abc_primary_text_material_dark"
         android:visibility="visible"
-        app:layout_anchor="@id/statusCode"
-        app:layout_anchorGravity="center_horizontal">
+        android:layout_gravity="center"
+        android:gravity="center">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/statusCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/default_code"
+        android:textSize="40sp"
+        android:background="@color/orange_primary"
+        android:textColor="@color/abc_primary_text_material_dark"
+        android:visibility="visible"
+        app:layout_anchor="@id/statusMsg"
+        app:layout_anchorGravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center">
+    <!--        android:layout_gravity="center"-->
+    <!--        android:gravity="center"-->
 
     </TextView>
 
